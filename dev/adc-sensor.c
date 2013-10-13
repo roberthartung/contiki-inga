@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, TU Braunschweig
+ * Copyright (c) 2012, TU Braunschweig.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,66 +29,54 @@
 
 /**
  * \file
- *        Plattform config for INGA
+ *      Analog Digital Converter sensor implementation
  * \author
- *        Enrico Joerns <e.joerns@tu-bs.de>
+ *      Enrico Joerns <e.joerns@tu-bs.de>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
-
-/*
- * Definitions below are dictated by the hardware and not really
- * changeable!
- */
-
-/** Inga revision 1.2  */
-#define INGA_V12  12
-/** Inga revision 1.5  */
-#define INGA_V15  15
-/** Inga revision 2.0  */
-#define INGA_V20  20
-
-/** Set default INGA revision if nothing else set 
- * Possible values are INGA_V12, INGA_V15, INGA_V20
- */
-#ifndef INGA_CONF_REVISION
-#define INGA_REVISION INGA_V12
-#else
-#define INGA_REVISION INGA_CONF_REVISION
-#endif
-
-#define PLATFORM       PLATFORM_AVR
-
-#if INGA_REVISION == INGA_V12
-#define RF230_HAL = INGA_12
-#else
-#error INGA revision not supported
-#endif
-
-#define PLATFORM_HAS_LEDS   1
-#define PLATFORM_HAS_BUTTON 1
-
-/* CPU target speed in Hz */
-#ifndef F_CPU
-#define F_CPU          8000000UL
-#endif
-
-/* Our clock resolution, this is the same as Unix HZ. Depends on F_CPU */
-#ifndef CLOCK_CONF_SECOND
-#define CLOCK_CONF_SECOND 128UL
-#endif
-
-/* Types for clocks and uip_stats */
-typedef unsigned short uip_stats_t;
-typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
-
-/* LED ports */
-#define LEDS_PxDIR DDRD
-#define LEDS_PxOUT PORTD
-#define LEDS_CONF_GREEN 0x20
-#define LEDS_CONF_YELLOW  0x80
+#include "adc-sensor.h"
 
 
-#endif /* __PLATFORM_CONF_H__ */
+const struct sensors_sensor adc_sensor;
+uint8_t adc_state=0;
+/*---------------------------------------------------------------------------*/
+static int
+value(int type)
+{
+  switch(type) {
+  }
+  return 0;
+}
+/*---------------------------------------------------------------------------*/
+static int
+status(int type)
+{
+  switch (type) {
+    case SENSORS_ACTIVE:
+      break;
+    case SENSORS_READY:
+      break;
+  }
+  return adc_state;
+}
+/*---------------------------------------------------------------------------*/
+static int
+configure(int type, int c)
+{
+  switch (type) {
+    case SENSORS_ACTIVE:
+      if (c) {
+        if (!status(SENSORS_ACTIVE)) {
+          // TODO...
+        }
+      } else {
+        // deactivate
+      }
+      break;
+    default:
+    break;
+  }
+  return 0;
+}
+/*---------------------------------------------------------------------------*/
+SENSORS_SENSOR(adc_sensor, "ADC", value, configure, status);

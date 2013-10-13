@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, TU Braunschweig
+ * Copyright (c) 2012, TU Braunschweig.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,66 +29,51 @@
 
 /**
  * \file
- *        Plattform config for INGA
+ *		I2C driver definitions
  * \author
- *        Enrico Joerns <e.joerns@tu-bs.de>
+ *      Stephan Rottman <rottmann@ibr.cs.tu-bs.de>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
-
-/*
- * Definitions below are dictated by the hardware and not really
- * changeable!
+/**
+ * \addtogroup inga_bus_driver
+ * @{
  */
 
-/** Inga revision 1.2  */
-#define INGA_V12  12
-/** Inga revision 1.5  */
-#define INGA_V15  15
-/** Inga revision 2.0  */
-#define INGA_V20  20
-
-/** Set default INGA revision if nothing else set 
- * Possible values are INGA_V12, INGA_V15, INGA_V20
+/**
+ * \defgroup i2c_driver I2C-Bus Driver
+ * @{
  */
-#ifndef INGA_CONF_REVISION
-#define INGA_REVISION INGA_V12
-#else
-#define INGA_REVISION INGA_CONF_REVISION
-#endif
 
-#define PLATFORM       PLATFORM_AVR
+#include <avr/io.h>
 
-#if INGA_REVISION == INGA_V12
-#define RF230_HAL = INGA_12
-#else
-#error INGA revision not supported
-#endif
-
-#define PLATFORM_HAS_LEDS   1
-#define PLATFORM_HAS_BUTTON 1
-
-/* CPU target speed in Hz */
-#ifndef F_CPU
-#define F_CPU          8000000UL
-#endif
-
-/* Our clock resolution, this is the same as Unix HZ. Depends on F_CPU */
-#ifndef CLOCK_CONF_SECOND
-#define CLOCK_CONF_SECOND 128UL
-#endif
-
-/* Types for clocks and uip_stats */
-typedef unsigned short uip_stats_t;
-typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
-
-/* LED ports */
-#define LEDS_PxDIR DDRD
-#define LEDS_PxOUT PORTD
-#define LEDS_CONF_GREEN 0x20
-#define LEDS_CONF_YELLOW  0x80
+#ifndef I2CDRV_H_
+#define I2CDRV_H_
 
 
-#endif /* __PLATFORM_CONF_H__ */
+#define I2C_HIGH_SPEED	 0
+
+
+#define I2C_START        0x08
+#define I2C_REP_START    0x10
+#define I2C_MT_SLA_ACK   0x18
+#define I2C_MT_DATA_ACK  0x28
+#define I2C_MR_SLA_ACK   0x40
+#define I2C_MR_DATA_ACK  0x50
+#define I2C_MR_DATA_NACK 0x58
+
+
+void i2c_init(void);
+void i2c_stop(void);
+
+int8_t i2c_start(uint8_t addr);
+int8_t i2c_rep_start(uint8_t addr);
+int8_t i2c_write(uint8_t data);
+int8_t i2c_read(uint8_t *data, uint8_t ack);
+int8_t i2c_read_ack(uint8_t *data);
+int8_t i2c_read_nack(uint8_t *data);
+
+
+#endif /* I2CDRV_H_ */
+
+/** @} */
+/** @} */

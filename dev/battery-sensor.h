@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, TU Braunschweig
+ * Copyright (c) 2012, TU Braunschweig.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,66 +29,64 @@
 
 /**
  * \file
- *        Plattform config for INGA
+ *      Battery sensor definition
  * \author
- *        Enrico Joerns <e.joerns@tu-bs.de>
+ *      Enrico Joerns <e.joerns@tu-bs.de>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
-
-/*
- * Definitions below are dictated by the hardware and not really
- * changeable!
+/**
+ * \addtogroup inga_sensors
+ * @{
  */
 
-/** Inga revision 1.2  */
-#define INGA_V12  12
-/** Inga revision 1.5  */
-#define INGA_V15  15
-/** Inga revision 2.0  */
-#define INGA_V20  20
+/**
+ * \defgroup inga_battery_driver Battery Sensor
+ *
+ * This sensor interface allows to monitor the supply voltage and current
+ * of the INGA sensor platform.
+ *
+ * \section query_measure Query measurements
+ * <code>acc_sensor.value(channel)</code>
+ *
+ * The sensor provides 2 data channels.
+ * - One provides battery voltage level
+ * - One provides battery current
+ * A detailed list can be found at \ref batt_out_channels "Data Output Channels"
+ *
+ * \section usage Example Usage
+ *
+\code
+#include <sensors.h>
+[...]
+struct sensors_sensor batterysensor = find_sensor("Batt");
+ACTIVATE_SENSOR(batterysensor);
+[...]
+int v = batterysensor.value(BATTERY_VOLTAGE);
+int i = batterysensor.value(BATTERY_CURRENT);
+\endcode
+ * @{ */
 
-/** Set default INGA revision if nothing else set 
- * Possible values are INGA_V12, INGA_V15, INGA_V20
- */
-#ifndef INGA_CONF_REVISION
-#define INGA_REVISION INGA_V12
-#else
-#define INGA_REVISION INGA_CONF_REVISION
-#endif
+#ifndef BATTERY_SENSOR_H
+#define	BATTERY_SENSOR_H
 
-#define PLATFORM       PLATFORM_AVR
+#include "lib/sensors.h"
 
-#if INGA_REVISION == INGA_V12
-#define RF230_HAL = INGA_12
-#else
-#error INGA revision not supported
-#endif
+extern const struct sensors_sensor battery_sensor;
 
-#define PLATFORM_HAS_LEDS   1
-#define PLATFORM_HAS_BUTTON 1
+#define BATTERY_SENSOR "Batt"
 
-/* CPU target speed in Hz */
-#ifndef F_CPU
-#define F_CPU          8000000UL
-#endif
+/**
+ * \name Data Output Channels
+ * \anchor batt_out_channels
+ * 
+ * @{ */
+/** Returns battery voltage im mV */
+#define BATTERY_VOLTAGE   2
+/** Returns battery current im mA */
+#define BATTERY_CURRENT   3
+/** @} */
 
-/* Our clock resolution, this is the same as Unix HZ. Depends on F_CPU */
-#ifndef CLOCK_CONF_SECOND
-#define CLOCK_CONF_SECOND 128UL
-#endif
+#endif	/* BATTERY_SENSOR_H */
 
-/* Types for clocks and uip_stats */
-typedef unsigned short uip_stats_t;
-typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
-
-/* LED ports */
-#define LEDS_PxDIR DDRD
-#define LEDS_PxOUT PORTD
-#define LEDS_CONF_GREEN 0x20
-#define LEDS_CONF_YELLOW  0x80
-
-
-#endif /* __PLATFORM_CONF_H__ */
+/** @} */
+/** @} */

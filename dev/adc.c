@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, TU Braunschweig
+ * Copyright (c) 2012, TU Braunschweig.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,66 +29,77 @@
 
 /**
  * \file
- *        Plattform config for INGA
+ *      ADC driver implementation
  * \author
- *        Enrico Joerns <e.joerns@tu-bs.de>
+ *      Ulf Kulau <kulau@ibr.cs.tu-bs.de>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
-
-/*
- * Definitions below are dictated by the hardware and not really
- * changeable!
+/**
+ * \addtogroup inga_sensors_driver
+ * @{
  */
 
-/** Inga revision 1.2  */
-#define INGA_V12  12
-/** Inga revision 1.5  */
-#define INGA_V15  15
-/** Inga revision 2.0  */
-#define INGA_V20  20
-
-/** Set default INGA revision if nothing else set 
- * Possible values are INGA_V12, INGA_V15, INGA_V20
+/**
+ * \addtogroup adc_driver
+ * @{
  */
-#ifndef INGA_CONF_REVISION
-#define INGA_REVISION INGA_V12
-#else
-#define INGA_REVISION INGA_CONF_REVISION
-#endif
-
-#define PLATFORM       PLATFORM_AVR
-
-#if INGA_REVISION == INGA_V12
-#define RF230_HAL = INGA_12
-#else
-#error INGA revision not supported
-#endif
-
-#define PLATFORM_HAS_LEDS   1
-#define PLATFORM_HAS_BUTTON 1
-
-/* CPU target speed in Hz */
-#ifndef F_CPU
-#define F_CPU          8000000UL
-#endif
-
-/* Our clock resolution, this is the same as Unix HZ. Depends on F_CPU */
-#ifndef CLOCK_CONF_SECOND
-#define CLOCK_CONF_SECOND 128UL
-#endif
-
-/* Types for clocks and uip_stats */
-typedef unsigned short uip_stats_t;
-typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
-
-/* LED ports */
-#define LEDS_PxDIR DDRD
-#define LEDS_PxOUT PORTD
-#define LEDS_CONF_GREEN 0x20
-#define LEDS_CONF_YELLOW  0x80
 
 
-#endif /* __PLATFORM_CONF_H__ */
+#include "adc.h"
+void
+adc_init(uint8_t mode, uint8_t ref)
+{
+  ADCSRA = ((ADC_ENABLE) | (ADC_PRESCALE_64));
+  ADCSRB = 0x00;
+  ADMUX = ref;
+
+  if (mode != ADC_SINGLE_CONVERSION) {
+    ADCSRB |= (0x07 & mode);
+    ADCSRA |= ((ADC_TRIGGER_ENABLE) | (ADC_INTERRUPT_ENABLE));
+  }
+}
+/*----------------------------------------------------------------------------*/
+void
+adc_set_mux(uint8_t mux)
+{
+  static uint8_t used_adcs = 0;
+  /*save energy by disabling the i/o input buffer*/
+  if (mux < 8) {
+    used_adcs |= (1 << mux);
+    DIDR0 |= used_adcs;
+  }
+  ADMUX &= (0xE0);
+  ADMUX |= mux;
+  ADCSRA |= ADC_START;
+}
+/*----------------------------------------------------------------------------*/
+uint16_t
+adc_get_value(void)
+{
+  if (ADCSRA & ADC_TRIGGER_ENABLE) {
+    /*just read the ADC data register*/
+    return ADCW;
+  } else {
+    /*start single conversion*/
+    while (ADCSRA & (1 << ADSC)) {
+      ;
+    }
+    return ADCW;
+  }
+}
+/*----------------------------------------------------------------------------*/
+uint16_t
+adc_get_value_from(uint8_t chn)
+{
+  adc_set_mux(chn);
+  return adc_get_value();
+}
+/*----------------------------------------------------------------------------*/
+void
+adc_deinit(void)
+{
+  ADCSRA = ADC_STOP;
+  ADCSRB = ADC_STOP;
+  ADMUX = ADC_STOP;
+}
+/*----------------------------------------------------------------------------*/

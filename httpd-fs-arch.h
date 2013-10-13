@@ -25,70 +25,58 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * This file is part of the Contiki operating system.
+ *
  */
 
 /**
  * \file
- *        Plattform config for INGA
+ *  File system functions for the raven/inga-webserver.
  * \author
- *        Enrico Joerns <e.joerns@tu-bs.de>
+ *  Enrico Joerns <e.joerns@tu-bs.de>
  */
-
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
 
 /*
- * Definitions below are dictated by the hardware and not really
- * changeable!
+ * Provides file system functions for the raven/inga-webserver.
+ * 
+ * Currently implemented for coffee on internal flash, external flash and sd card
  */
 
-/** Inga revision 1.2  */
-#define INGA_V12  12
-/** Inga revision 1.5  */
-#define INGA_V15  15
-/** Inga revision 2.0  */
-#define INGA_V20  20
+#ifndef HTTPD_FS_ARCH_H
+#define	HTTPD_FS_ARCH_H
 
-/** Set default INGA revision if nothing else set 
- * Possible values are INGA_V12, INGA_V15, INGA_V20
+
+#if COFFEE_FILES
+
+/* Coffee file system can be static or dynamic. If static, new files
+   can not be created and rewrites of an existing file can not be
+   made beyond the initial allocation.
  */
-#ifndef INGA_CONF_REVISION
-#define INGA_REVISION INGA_V12
-#else
-#define INGA_REVISION INGA_CONF_REVISION
+#include "cfs-coffee-arch.h"
+
+#define httpd_fs_cpy      avr_httpd_fs_cpy
+#define httpd_fs_getchar  avr_httpd_fs_getchar
+#define httpd_fs_strcmp   avr_httpd_fs_strcmp
+#define httpd_fs_strchr   avr_httpd_fs_strchr
+
+#ifdef COFFEE_AVR_FLASH
+#define avr_httpd_fs_cpy(dest,addr,size) avr_flash_read((CFS_CONF_OFFSET_TYPE) addr, (uint8_t *)dest, (CFS_CONF_OFFSET_TYPE) size)
+#define http_fs_read avr_flash_read
 #endif
 
-#define PLATFORM       PLATFORM_AVR
-
-#if INGA_REVISION == INGA_V12
-#define RF230_HAL = INGA_12
-#else
-#error INGA revision not supported
+#ifdef COFFEE_AVR_EXTERNAL
+#define avr_httpd_fs_cpy(dest,addr,size) external_flash_read((CFS_CONF_OFFSET_TYPE) addr, (uint8_t *)dest, (CFS_CONF_OFFSET_TYPE) size)
+#define http_fs_read external_flash_read
 #endif
 
-#define PLATFORM_HAS_LEDS   1
-#define PLATFORM_HAS_BUTTON 1
-
-/* CPU target speed in Hz */
-#ifndef F_CPU
-#define F_CPU          8000000UL
+#ifdef COFFEE_AVR_SDCARD
+#define avr_httpd_fs_cpy(dest,addr,size) sd_read((CFS_CONF_OFFSET_TYPE) addr, (uint8_t *)dest, (CFS_CONF_OFFSET_TYPE) size)
+#define http_fs_read sd_read
 #endif
 
-/* Our clock resolution, this is the same as Unix HZ. Depends on F_CPU */
-#ifndef CLOCK_CONF_SECOND
-#define CLOCK_CONF_SECOND 128UL
 #endif
 
-/* Types for clocks and uip_stats */
-typedef unsigned short uip_stats_t;
-typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
 
-/* LED ports */
-#define LEDS_PxDIR DDRD
-#define LEDS_PxOUT PORTD
-#define LEDS_CONF_GREEN 0x20
-#define LEDS_CONF_YELLOW  0x80
+#endif	/* HTTPD_FS_ARCH_H */
 
-
-#endif /* __PLATFORM_CONF_H__ */
