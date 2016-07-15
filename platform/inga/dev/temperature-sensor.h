@@ -48,4 +48,9 @@ extern const struct sensors_sensor temperature_sensor;
 
 #define TEMPERATURE_SENSOR "Temperature"
 
+/** Returns Temperature low resolution (8Bit) */
+#define  TEMP     0
+/** Returns Temperature high resolution (12Bit) */
+#define  TEMP_H   1 
+
 #endif /* TEMPERATURE_SENSOR_H_ */
