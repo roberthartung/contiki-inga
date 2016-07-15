@@ -109,7 +109,7 @@ void uip_debug_lladdr_print(const uip_lladdr_t *addr);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 
 
-// Apps 
+// Apps
 #if (APP_SETTINGS_DELETE == 1)
 #include "settings_delete.h"
 #endif
@@ -441,6 +441,9 @@ init(void)
   /* Redirect stdout to second port */
   rs232_redirect_stdout(RS232_PORT_0);
 
+  /* Set rs232 input */
+  rs232_set_input(RS232_PORT_0, serial_line_input_byte);
+
   /* wait here to get a chance to see boot screen. */
   _delay_ms(200);
 
@@ -519,7 +522,7 @@ init(void)
 
 #if (APP_SETTINGS_DELETE == 1)
   process_start(&settings_delete_process, NULL);
-#endif    
+#endif
 
   /* load stuff from eeprom */
   load_config();
@@ -549,6 +552,9 @@ init(void)
 #else /* LINKADDR_SIZE */
 #error LINKADDR_SIZE not supported
 #endif /* LINKADDR_SIZE */
+
+/* Start rs232 serial input*/
+serial_line_init();
 
 #if PLATFORM_RADIO
   // Init radio
@@ -756,4 +762,3 @@ log_message(char *m1, char *m2)
 {
   PRINTF("%s%s\n", m1, m2);
 }
-

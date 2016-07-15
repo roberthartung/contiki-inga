@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2016, 
+ * Copyright (c) 2016,
  * Authors:
  *   Atis Elsts       <atis.elsts@bristol.ac.uk>
  *   Christian Rohner <christian.rohner@it.uu.se>
- *   Robert Olsson    <roolss@kth.se> 
+ *   Robert Olsson    <roolss@kth.se>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,7 +31,7 @@
  *
  */
 
-/* Main program for Packet Delivery Ratio, (PDR) testing. 
+/* Main program for Packet Delivery Ratio, (PDR) testing.
 
    Data file format:
    * timestamp unix time format
@@ -114,20 +114,20 @@ uint8_t eof = END_OF_FILE;
 
 static int set_txpower(uint8_t p);
 
-/* avr-rss2 plaftform has unresolved issues with TX-power 
-   for low power settings. Remapping the TX mappinng as below 
+/* avr-rss2 plaftform has unresolved issues with TX-power
+   for low power settings. Remapping the TX mappinng as below
    results in a decreasing TX power settings. */
 
 #if CONTIKI_TARGET_AVR_RSS2
 uint8_t tx_corr_tab[16] ={0,1,2,3,4,15,5,14,6,13,7,12,8,11,9,10};
 
-void radio_set_txpower_avr_rss2(uint8_t txp) 
+void radio_set_txpower_avr_rss2(uint8_t txp)
 {
   if(txp > 15)
     return rf230_set_txpower(0); /* Max */
   return rf230_set_txpower(tx_corr_tab[txp]);
 }
-#endif 
+#endif
 
 // -------------------------------------------------------------
 //
@@ -138,7 +138,7 @@ void radio_set_txpower_avr_rss2(uint8_t txp)
 static inline int16_t platform_rssi_dBm(uint16_t rssi, uint8_t platform)
 {
     int16_t dBm = 0;
-    
+
     if (platform == 3) {
         // ATmega128RFA1 Datasheet, page 70
         if (rssi == 0) dBm = -90;
@@ -161,15 +161,15 @@ static void printfCrc(const char *format, ...)
 {
     va_list args;
     va_start(args, format);
-    
+
     static char _print_buf[64];
     vsnprintf(_print_buf, sizeof(_print_buf), format, args);
-    
+
     const char *p = _print_buf;
     while (*p) {
         putchar(*p++);
     }
-    
+
     uint8_t crc = crc8Str(_print_buf);
     putchar(',');
     putchar(to_hex(crc >> 4));
@@ -193,7 +193,7 @@ static uint8_t get_txpower(void)
 
 static char *get_txpower_string(uint8_t p)
 {
-  if((p <= TX_POWER_MIN) && (p >= TX_POWER_MAX)) 
+  if((p <= TX_POWER_MIN) && (p >= TX_POWER_MAX))
     return tx_power_list[p];
   return "N/A";
 }
@@ -204,9 +204,9 @@ void printStats(struct stats_info *s)
     int16_t average_rssi;
     int16_t rssi;
     uint8_t lqi;
-    
+
     if (s->node_id == 0) return;
-    
+
     if (s->fine == 0) {
         rssi = 0;
         lqi = 0;
@@ -215,9 +215,9 @@ void printStats(struct stats_info *s)
         rssi = platform_rssi_dBm(average_rssi, s->platform_id);
         lqi = 255 - s->lqiSumDiff / s->fine;
     }
-    
+
     temp = temp_sensor.value(0);
-    
+
     printf("%s %5u %i | %s %5u %i | %u %s | ",
            platform_list[platform_id],
            node_id,
@@ -227,13 +227,13 @@ void printStats(struct stats_info *s)
            s->txtemp,
            s->channel,
            get_txpower_string(s->txpower));
-    
+
     printf("%u %u %d %u\n",
            s->fine,
            s->total,
            rssi,
            lqi);
-    
+
 #if DEBUG
     uint8_t i;
     for (i = 0; i < sizeof(packetsReceived); ++i) {
@@ -242,7 +242,7 @@ void printStats(struct stats_info *s)
     putchar('\n');
     memset(packetsReceived, 0, sizeof(packetsReceived));
 #endif
-    
+
 #if TRACK_ERRORS
     puts("Error statistics:");
     //printfCrc(" %u total packets, %u/%u/%u length errors, %u/%u corrupt packets",
@@ -270,13 +270,13 @@ void rtimerCallback(struct rtimer *t, void *ptr)
 {
     static uint8_t sendBuffer[TEST_PACKET_SIZE] __attribute__((aligned (2))) =  { 0, 0, 0, 10 };
     struct packetHeader *h = (struct packetHeader *) sendBuffer;
-    
+
     rtimer_clock_t next = RTIMER_TIME(t);
-    
+
     switch (currentState) {
         case STATE_RX:
             return;
-            
+
         case STATE_TX:
             sendPacketNumber++;
             h->sender = node_id;
@@ -286,11 +286,11 @@ void rtimerCallback(struct rtimer *t, void *ptr)
             h->platform_id = platform_id;
             h->packetNumber = sendPacketNumber;
             h->crc = crc8(h, sizeof(*h) - 1);
-            
+
             patternFill((uint16_t *)sendBuffer, TEST_PACKET_SIZE, h->packetNumber, HEADER_SIZE);
-            
+
             NETSTACK_RADIO.send(sendBuffer, TEST_PACKET_SIZE /*, 0*/);
-            
+
             if (h->packetNumber >= PACKETS_IN_TEST) {
                 printf("%s: pkts=%d channel=%d, txpower=%s\n", COMMAND_TX_FINISHED, h->packetNumber,
                        radio_get_channel(), get_txpower_string(txpower));
@@ -310,11 +310,11 @@ void rtimerCallback(struct rtimer *t, void *ptr)
                 next += PACKET_SEND_INTERVAL;
             }
             break;
-            
+
         default:
             break;
     }
-    
+
     rtimer_set(t, next, 1, rtimerCallback, ptr);
 }
 
@@ -329,17 +329,17 @@ static void inputPacket(void)
     int8_t lastIdx;
     uint8_t rssi;
     uint8_t i;
-    
+
     if (currentStatsIdx < 0 || currentStatsIdx >= STAT_SIZE) return;
     // TODO: better handling when stats memory full.
     // at the moment: ignoring new packets.
-    
+
     /* sanity check */
     if (h->channel != channel) return;
     if (h->platform_id == 0 || h->platform_id > PLATFORM_ID_MAX) return;
-    
+
     s = &stats[currentStatsIdx];
-    
+
     /* sender and channel is  "key" */
     if ((crc8(h, sizeof(*h)) == 0) && (h->sender != s->node_id || h->channel != s->channel || h->txpower != s->txpower)) {
         findIdx = -1;
@@ -385,15 +385,15 @@ static void inputPacket(void)
     }
 
     s->total++;
-    
+
     /* error analysis */
-    
+
     uint8_t length = packetbuf_totlen();
     if (length != TEST_PACKET_SIZE) {
 #if DEBUG
         printf("rcvd length=%d\n", length);
 #endif
-        
+
 #if TRACK_ERRORS
         if (length <= 2)
             s->zeroLength++;
@@ -404,7 +404,7 @@ static void inputPacket(void)
 #endif
         return;
     }
-    
+
     if (crc8(h, sizeof(*h)) != 0) {
 #if DEBUG
         puts("header crc bad!");
@@ -414,7 +414,7 @@ static void inputPacket(void)
 #endif
         return;
     }
-    
+
     uint16_t numNibbleErrors = patternCheck(
                                             (uint16_t *)packetbuf_hdrptr(),
                                             TEST_PACKET_SIZE,
@@ -428,14 +428,14 @@ static void inputPacket(void)
                                             NULL, NULL, NULL
 #endif
                                             );
-    
+
     if (numNibbleErrors) {
 #if DEBUG
         printf("some bytes are corrupt, num=%d, crcOk=%d\n",
                numNibbleErrors,
                packetbuf_attr(PACKETBUF_ATTR_CRC_OK));
 #endif
-        
+
 #if TRACK_ERRORS
         s->badContents++;
         s->numBadNibbles += numNibbleErrors;
@@ -456,7 +456,7 @@ static void inputPacket(void)
 #endif
         return;
     }
-    
+
     if (h->packetNumber > PACKETS_IN_TEST) {
         // whoops. all integrity checks succeeded, but the packet is obviously in error.
         printf("rx a packet with invalid number (%d)\n", h->packetNumber);
@@ -465,7 +465,7 @@ static void inputPacket(void)
 #endif
         return;
     }
-    
+
 #if DEBUG
     printf("rx %u from %u\n", h->packetNumber, h->sender);
 #endif
@@ -473,18 +473,18 @@ static void inputPacket(void)
     // putchar(to_hex(h->packetNumber >> 4));
     // putchar(to_hex(h->packetNumber & 0xf));
     // putchar('\n');
-    
-    
+
+
     /* correct data */
-    
+
     s->fine++;
     rssi = (uint8_t) (int) packetbuf_attr(PACKETBUF_ATTR_RSSI);
     s->rssiSum += rssi;
     s->lqiSumDiff += 255 - packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);   // sum up difference to 255 (save memory)
     if (rssi > s->rssiMax) s->rssiMax = rssi;
     if (rssi == 0 || rssi < s->rssiMin) s->rssiMin = rssi;
-    
-    
+
+
 #if DEBUG || 1
     packetsReceived[h->packetNumber - 1] = 1;
 #endif
@@ -508,7 +508,7 @@ static void print_help(void)
     printf("upgr         -- reboot via bootloader\n");
 }
 
-static int set_txpower(uint8_t p) 
+static int set_txpower(uint8_t p)
 {
     if(p == TX_POWER_MAX) {
         txpower = TX_POWER_MAX;
@@ -541,7 +541,7 @@ static int cmd_txp(uint8_t verbose)
 {
     char *p = strtok(NULL, delim);
     txpower_sweep = false;
-    
+
     if(p) {
         if(!strcmp(p, "max")) {
             set_txpower(TX_POWER_MAX);
@@ -577,7 +577,7 @@ static int cmd_chan(uint8_t verbose)
 {
     uint8_t tmp;
     char *p = strtok(NULL, delim);
-    
+
     if(p) {
         tmp  =  atoi((char *) p);
         if( tmp >= 11 && tmp <= 26) {
@@ -611,9 +611,9 @@ static void handle_serial_input(const char *line)
     int i;
     //printf("in: '%s'\n", line);
     p = strtok((char *)&line[0], (const char *) delim);
-    
+
     if (!p) return;
-    
+
     if (!strcmp(p, "tx") || !strcmp(line, "TX")) {
         if( !cmd_chan(0)) return;
 
@@ -628,7 +628,7 @@ static void handle_serial_input(const char *line)
     else if (!strcmp(p, "rx") || !strcmp(line, "RX")) {
         // XXX always required for the GW server
         if( !cmd_chan(0)) return;
-        
+
         etimer_set(&periodic, READY_PRINT_INTERVAL);
     }
     else if (!strcmp(p, "ch") || !strcmp(line, "chan")) {
@@ -669,14 +669,18 @@ AUTOSTART_PROCESSES(&controlProcess);
 PROCESS_THREAD(controlProcess, ev, data)
 {
     PROCESS_BEGIN();
-    
+
     SENSORS_ACTIVATE(temp_sensor);
     SENSORS_ACTIVATE(button_sensor);
-    
+
 #ifdef CONTIKI_TARGET_AVR_RSS2
     NETSTACK_RADIO.off();
     rf230_set_rpc(0x0); /* Disable reduced power (RPC) features */
     NETSTACK_RADIO.on();
+#endif
+
+#ifdef CONTIKI_TARGET_INGA
+    node_id_restore();
 #endif
     
     platform_id = PLATFORM_ID;
@@ -691,12 +695,12 @@ PROCESS_THREAD(controlProcess, ev, data)
     radio_set_txpower(RADIO_POWER_ZERO_DB);
     rime_sniffer_add(&printSniffer);
     etimer_set(&periodic, CLOCK_SECOND);
-    
+
     for(;;) {
         PROCESS_WAIT_EVENT();
-        
+
         //printf("event %u (%u) at %u, data %p\n", (uint16_t)ev, (uint16_t)serial_line_event_message, currentState, data);
-        
+
         switch(currentState) {
             case STATE_RX:
                 if (numTestsInSenderRole < 0) {
