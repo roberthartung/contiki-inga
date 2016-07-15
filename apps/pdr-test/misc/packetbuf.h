@@ -306,6 +306,7 @@ enum {
   PACKETBUF_ATTR_LINK_QUALITY,
   PACKETBUF_ATTR_RSSI,
   PACKETBUF_ATTR_TIMESTAMP,
+  PACKETBUF_ATTR_TIMESTAMP_HIGHWORD,
   PACKETBUF_ATTR_RADIO_TXPOWER,
   PACKETBUF_ATTR_LISTEN_TIME,
   PACKETBUF_ATTR_TRANSMIT_TIME,
@@ -314,6 +315,10 @@ enum {
   PACKETBUF_ATTR_MAC_ACK,
   PACKETBUF_ATTR_IS_CREATED_AND_SECURED,
   PACKETBUF_ATTR_CRC_OK,
+  PACKETBUF_ATTR_NUM_TRANSMISSIONS,
+  PACKETBUF_ATTR_RF_CHANNEL,
+  PACKETBUF_ATTR_IS_DUPLICATE,
+  PACKETBUF_ATTR_APPLICATION_SEQNUM,
   
   /* Scope 1 attributes: used between two neighbors only. */
 #if PACKETBUF_WITH_PACKET_TYPE
@@ -325,6 +330,8 @@ enum {
   PACKETBUF_ATTR_REXMIT,
   PACKETBUF_ATTR_MAX_REXMIT,
   PACKETBUF_ATTR_NUM_REXMIT,
+  PACKETBUF_ATTR_FORWARDING_TIME,
+  PACKETBUF_ATTR_FORWARDING_TIME_HIGHWORD,
 #endif /* NETSTACK_CONF_WITH_RIME */
   PACKETBUF_ATTR_PENDING,
   PACKETBUF_ATTR_FRAME_TYPE,
@@ -346,6 +353,10 @@ enum {
   PACKETBUF_ATTR_EPACKET_ID,
   PACKETBUF_ATTR_EPACKET_TYPE,
   PACKETBUF_ATTR_ERELIABLE,
+  PACKETBUF_ATTR_ORIGINATION_TIME,
+  PACKETBUF_ATTR_ORIGINATION_TIME_HIGHWORD,
+  PACKETBUF_ATTR_NUM_ETRANSMISSIONS,
+  PACKETBUF_ATTR_ENUM_CHANNELS,
 #endif /* NETSTACK_CONF_WITH_RIME */
 
   /* These must be last */
@@ -404,10 +415,23 @@ packetbuf_set_attr(uint8_t type, const packetbuf_attr_t val)
   packetbuf_attrs[type].val = val;
   return 1;
 }
+static inline int
+packetbuf_set_attr32(uint8_t type, const uint32_t val)
+{
+  packetbuf_attrs[type].val = val & 0xffff;
+  packetbuf_attrs[type + 1].val = val >> 16;
+  return 1;
+}
 static inline packetbuf_attr_t
 packetbuf_attr(uint8_t type)
 {
   return packetbuf_attrs[type].val;
+}
+static inline uint32_t
+packetbuf_attr32(uint8_t type)
+{
+  return packetbuf_attrs[type].val
+          + ((uint32_t) packetbuf_attrs[type + 1].val << 16);
 }
 
 static inline int
