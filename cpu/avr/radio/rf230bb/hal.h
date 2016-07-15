@@ -79,6 +79,7 @@
 #define IRIS			5
 #define ATMEGA128RFA1   6
 #define ATMEGA256RFR2   7
+#define INGA_RF23X_A    8
 
 #if PLATFORM_TYPE == RCB_B
 /* 1281 rcb */
@@ -110,6 +111,20 @@
 #   define SLPTRPORT  B
 #   define SLPTRPIN   (0x04)
 
+#elif PLATFORM_TYPE == INGA_RF23X_A
+/* 1284 inga */
+#   define SSPORT     B
+#   define SSPIN      (0x04)
+#   define SPIPORT    B
+#   define MOSIPIN    (0x05)
+#   define MISOPIN    (0x06)
+#   define SCKPIN     (0x07)
+#   define RSTPORT    B
+#   define RSTPIN     (0x01)
+#   define IRQPORT    D
+#   define IRQPIN     (0x06)
+#   define SLPTRPORT  B
+#   define SLPTRPIN   (0x03)
 
 #elif PLATFORM_TYPE == RAVEN_D
 /* 1284 raven */
