@@ -4,10 +4,10 @@ CONTIKI_CORE=contiki-inga-main
 CONTIKI_TARGET_MAIN = ${CONTIKI_CORE}.o
 CONTIKI_TARGET_SOURCEFILES += contiki-inga-main.c
 # INGA platform source files
-INGA_INTERFACES = i2c.c  mspi.c sdcard.c 
-INGA_DRIVERS = leds-arch.c adc.c at45db.c adxl345.c bmp085.c l3g4200d.c mpl115a.c mag3110.c
+INGA_INTERFACES = i2c.c  mspi.c sdcard.c
+INGA_DRIVERS = leds-arch.c adc.c at45db.c adxl345.c bmp085.c l3g4200d.c mpl115a.c mag3110.c tmp102.c
 INGA_SENSORS = sensors.c acc-sensor.c adc-sensor.c battery-sensor.c \
-	       button-sensor.c gyro-sensor.c pressure-sensor.c radio-sensor.c mag-sensor.c
+	       button-sensor.c gyro-sensor.c pressure-sensor.c temperature-sensor.c radio-sensor.c mag-sensor.c
 INGA_SOURCEFILES += $(INGA_INTERFACES) $(INGA_DRIVERS) $(INGA_SENSORS)
 
 ifeq ($(REV),)
@@ -22,6 +22,8 @@ else ifeq ($(REV),1.5)
   CFLAGS += -DINGA_CONF_REVISION=INGA_V15
 else ifeq ($(REV),1.6)
   CFLAGS += -DINGA_CONF_REVISION=INGA_V16
+else ifeq ($(REV),1.6.1)
+	CFLAGS += -DINGA_CONF_REVISION=INGA_V161
 else ifeq ($(REV),2.0)
   CFLAGS += -DINGA_CONF_REVISION=INGA_V20
 endif
@@ -45,16 +47,16 @@ CONTIKI_TARGET_SOURCEFILES += cfs-coffee-arch.c
 # of a static file system in program flash starting at 0x10000 (word address=0x8000)
 # For program flash the starting address is rounded down to a page boundary in cfs-coffee-arch.h
 # It should be rounded down here too if someone can figure out how :)
-COFFEE_DEFAULT_ADDR=0x0 
+COFFEE_DEFAULT_ADDR=0x0
 
 ifdef COFFEE_DEVICE                    # if files are defined force definition of COFFEE_ADDRESS
   ifndef COFFEE_ADDRESS
     ifeq ($(COFFEE_DEVICE), 1)         # 1 = eeprom static
       $(info Coffee in EEPROM (static))
-      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR) 
+      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR)
     else ifeq ($(COFFEE_DEVICE), 2)    # 2 = eeprom dynamic
       $(info Coffee in EEPROM (dynamic))
-      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR) 
+      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR)
     else ifeq ($(COFFEE_DEVICE), 3)    # 3 = program flash static
       $(info Coffee in Flash (static))
       COFFEE_ADDRESS=0x14000
@@ -63,7 +65,7 @@ ifdef COFFEE_DEVICE                    # if files are defined force definition o
       COFFEE_ADDRESS=0x10000
     else ifeq ($(COFFEE_DEVICE), 5)    # 5 = INGA external flash
       $(info Coffee in external Flash)
-      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR) 
+      COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR)
     else ifeq ($(COFFEE_DEVICE), 6)    # 6 = INGA SDCard slot
       $(info Coffee on SD-Card)
       COFFEE_ADDRESS=$(COFFEE_DEFAULT_ADDR)
@@ -134,7 +136,7 @@ AVRDUDE_OPTIONS=-b 230400 -u
 ### JTAG programming
 
 AVRDUDE_JTAG_PROGRAMMER=jtag2
-# number of bits every avr shifts the jtag commands 
+# number of bits every avr shifts the jtag commands
 JTAG_BITSHIFT=4
 # number of devices in the chain
 JTAG_LENGTH=8
