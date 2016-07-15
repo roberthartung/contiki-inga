@@ -24,6 +24,9 @@ CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\" -DCOSYNCH_CONF_ENABLED
 hex: all
 ifeq ($(TARGET),avr-rss2)
 	$(OBJCOPY) pdr.$(TARGET) -j .text -j .data -O ihex pdr.$(TARGET).hex
+endif
+ifeq ($(TARGET),inga)
+	$(OBJCOPY) pdr.$(TARGET) -j .text -j .data -O ihex pdr.$(TARGET).hex
 else
 	$(OBJCOPY) pdr.$(TARGET) -O ihex pdr.$(TARGET).hex
 	$(OBJCOPY) stringtest.$(TARGET) -O ihex stringtest.$(TARGET).hex

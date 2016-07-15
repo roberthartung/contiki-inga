@@ -44,13 +44,20 @@ const struct sensors_sensor temperature_sensor;
 static int
 value(int type)
 {
-  return tmp102_read_temp_byte();
+  switch (type) {
+    case TEMP:
+      return tmp102_read_temp_byte();
+      break;
+    case TEMP_H:
+      return tmp102_read_temp_word();
+      break;
+  }
 }
 /*---------------------------------------------------------------------------*/
 static int
 configure(int type, int c)
 {
-  return tmp102_init(); //TODO return value ok?
+  return tmp102_init(); //TODO return =1 (OK) =0 (Failure)
 }
 /*---------------------------------------------------------------------------*/
 static int
