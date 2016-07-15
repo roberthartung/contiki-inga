@@ -1601,6 +1601,14 @@ rf230_read(void *buf, unsigned short bufsize)
 #endif
 #endif
 
+#if RF230_CONF_CHECKSUM
+  packetbuf_set_attr(PACKETBUF_ATTR_CRC_OK, footer[1] & FOOTER1_CRC_OK);
+#else
+  /* We've automatic FCS on and we've already verfied FCS bit in RSSI
+     register -- just return true  */
+  packetbuf_set_attr(PACKETBUF_ATTR_CRC_OK, 1);
+#endif
+
 #ifdef RF230BB_HOOK_RX_PACKET
   RF230BB_HOOK_RX_PACKET(buf,len);
 #endif
