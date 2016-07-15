@@ -183,16 +183,16 @@ uint8_t get_channel() {
 #define radio_get_rssi    rf230_rssi
 
 // see ATmega128RFA1 datasheet page 109
-#define RADIO_POWER_MAX        0    // TODO: configure!!!
-#define RADIO_POWER_MIN        0    // TODO: configure!!!
-#define RADIO_POWER_ZERO_DB    6   // actually 0.5 dBm
-#define RADIO_POWER_MINUS7_DB  12  // actually -6.5 dBm
+#define RADIO_POWER_MAX        0   	// 3dbm
+#define RADIO_POWER_MIN        15  	// -17.2dbm
+#define RADIO_POWER_ZERO_DB    6   	// actually 0.5 dBm
+#define RADIO_POWER_MINUS7_DB  12  	// actually -6.5 dBm
 #define RADIO_POWER_MINUS15_DB TX_PWR_17_2DBM  // actually -17.5 dBm
 
 char *tx_power_list[] = { "3", "0", "-7", "-17", "-17"}; /* dBm */
 
-#define PLATFORM_TEMP_SENSOR_HEADER "dev/pressure-sensor.h"
-#define temp_sensor pressure_sensor
+#define PLATFORM_TEMP_SENSOR_HEADER "dev/temperature-sensor.h"
+#define temp_sensor temperature_sensor
 
 #else
 #error No support for your platform!
