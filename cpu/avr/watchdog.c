@@ -64,9 +64,15 @@
 #include <avr/wdt.h>
 #include <avr/interrupt.h>
 
+
+
+/* Keep address over reboots */
+void *watchdog_return_addr __attribute__ ((section (".noinit")));
+
 /* MCUSR is a deprecated name but older avr-libc versions may define it */
 #if !defined (MCUCSR)
 # if defined (MCUSR)
+#  warning *** MCUCSR not defined, using MCUSR instead ***
 #  define MCUCSR MCUSR
 # endif
 #endif
@@ -74,6 +80,23 @@
 #if WATCHDOG_CONF_BALANCE && WATCHDOG_CONF_TIMEOUT >= 0
 static int stopped = 0;
 #endif
+
+/* Only required if we want to examine reset source later on. */
+uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
+
+/* 
+ * Watchdog may remain activated with cleared prescaler (fastest) after reset.
+ * Thus disabling the watchdog during init is required!!
+ */
+void get_mcusr(void) \
+       __attribute__((naked)) \
+       __attribute__((section(".init3")));
+void get_mcusr(void)
+{
+  mcusr_mirror = MCUSR;
+  MCUCSR &= ~(1 << WDRF);
+  wdt_disable();
+}
 
 /*---------------------------------------------------------------------------*/
 void
