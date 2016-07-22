@@ -343,8 +343,10 @@ load_config(void)
 #ifndef INGA_CONF_PAN_ADDR
   if (settings_check(SETTINGS_KEY_PAN_ADDR, 0) == true) {
     inga_cfg.pan_addr = settings_get_uint16(SETTINGS_KEY_PAN_ADDR, 0);
+  	node_id = inga_cfg.pan_addr;
   } else {
     inga_cfg.pan_addr = INGA_PAN_ADDR;
+  	node_id = inga_cfg.pan_addr;
   }
 #else /* !INGA_CONF_PAN_ADDR */
   inga_cfg.pan_addr = INGA_PAN_ADDR;
