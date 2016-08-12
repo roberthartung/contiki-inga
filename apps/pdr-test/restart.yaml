@@ -1,0 +1,10 @@
+---
+- hosts: nodes
+  remote_user: root
+  tasks:
+    - name: Stopping service
+      shell: /etc/init.d/pdrtest stop
+      ignore_errors: yes
+    - name: Starting service
+      shell: /etc/init.d/pdrtest start
+      ignore_errors: yes

@@ -2,9 +2,13 @@
 - hosts: central
   tasks:
     - name: create pdr-test directory
-      file: path=~/pdr-test/ansible.hosts state=directory mode=0755
+      file: path=~/pdr-test/ state=directory mode=0755
     - name: copy hosts
       copy: src=./ansible.hosts dest=~/pdr-test/ansible.hosts owner=potato group=potato mode=0644
+    - name: copy ansible script 1
+      copy: src=./potatonet.yaml dest=~/pdr-test/potatonet.yaml owner=potato group=potato mode=0644
+    - name: copy ansible script 2
+      copy: src=./restart.yaml dest=~/pdr-test/restart.yaml owner=potato group=potato mode=0644
     - name: copy hex file
       copy: src=./pdr.inga.hex dest=~/pdr-test/pdr.inga.hex owner=potato group=potato mode=0644
     - name: synchronize scripts

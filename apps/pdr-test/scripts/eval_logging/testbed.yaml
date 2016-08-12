@@ -1,5 +1,5 @@
 ---
-server_conf: 
+server_conf:
     byte_buffer: 500
     port: 4242
     ip: 172.18.1.2
@@ -23,136 +23,153 @@ nodes:
     - node_id: node0
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:9a:6c
 
     - node_id: node1
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:99:38
 
     - node_id: node2
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7e:33:9b:3c     
-      
+      mac_addr: 64:51:7e:33:9b:3c
+
     - node_id: node3
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:9a:a0
 
     - node_id: node4
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7e:33:99:2e  
+      mac_addr: 64:51:7e:33:99:2e
 
     - node_id: node5
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:9a:ae
 
     - node_id: node6
       tty:
           port: /dev/tty_INGA
-          baud: 19200 
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:9a:f6
 
     - node_id: node7
       tty:
           port: /dev/tty_INGA
-          baud: 19200 
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:98:ca
 
     - node_id: node8
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:33:9a:d0
 
     - node_id: node10
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7e:80:30:e2  
+      mac_addr: 64:51:7e:80:30:e2
 
     - node_id: node11
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7e:80:30:ec  
+      mac_addr: 64:51:7e:80:30:ec
 
     - node_id: node12
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7e:80:30:84  
+      mac_addr: 64:51:7e:80:30:84
 
     - node_id: node13
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:30:7a
 
     - node_id: node14
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:31:92
 
     - node_id: node15
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:31:3e
+
+    - node_id: node15a
+      tty:
+          port: /dev/tty_INGA
+          baud: 38400
+      mac_dev: eth0
+      mac_addr: 64:51:7e:33:9a:b8
 
     - node_id: node16
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:31:50
+
+    - node_id: node16a
+      tty:
+          port: /dev/tty_INGA
+          baud: 38400
+      mac_dev: eth0
+      mac_addr: 64:51:7e:33:9b:42
 
     - node_id: node17
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:31:5a
+
+    - node_id: node17a
+      tty:
+          port: /dev/tty_INGA
+          baud: 38400
+      mac_dev: eth0
+      mac_addr: 64:51:7e:33:99:62
 
     - node_id: node18
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
       mac_addr: 64:51:7e:80:31:74
 
     - node_id: node19
       tty:
           port: /dev/tty_INGA
-          baud: 19200
+          baud: 38400
       mac_dev: eth0
-      mac_addr: 64:51:7E:80:31:C4
-
-
-
-
+      mac_addr: 64:51:7e:80:31:c4

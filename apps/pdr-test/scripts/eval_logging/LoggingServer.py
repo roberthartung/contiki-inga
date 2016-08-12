@@ -10,22 +10,22 @@ class LoggingServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     listen_node = False
     byte_buffer = 0
     allow_reuse_address = True
-    handlers_dict = {}    
-    
+    handlers_dict = {}
+
     def dispListenNodes(self):
         print listen_node
-        
+
 class LoggingHandler(SocketServer.StreamRequestHandler):
     node_id = 0
     running = True
-    node_log_file = False 
+    node_log_file = False
     buffered_bytes = 0
     def writeData(self, data):
         self.wfile.write(data)
     def setup(self):
         LoggingServer.handlers.append(self)
-        print "LoggingHandler added."
-        print LoggingServer.handlers
+        print( "LoggingHandler added." )
+        print( len(LoggingServer.handlers) )
         return SocketServer.StreamRequestHandler.setup(self)
     def handle(self):
         while self.running:
@@ -34,7 +34,7 @@ class LoggingHandler(SocketServer.StreamRequestHandler):
                 print("Read error. finish.")
                 #self.finish()
                 break
-            packet = line.split(':',2) 
+            packet = line.split(':',2)
             if len(packet) >= 2:
                 command = packet[1].strip()
                 if len(packet) > 2:
@@ -69,7 +69,7 @@ class LoggingHandler(SocketServer.StreamRequestHandler):
                 elif not self.node_log_file:
                     print("log file not opened")
                 elif not data:
-                    print("no data given")    
+                    print("no data given")
             if command == "setup":
                 if LoggingServer.node_list.__contains__(self.node_id):
                     print("warning: node %s already connected"% (self.node_id))
@@ -107,7 +107,7 @@ class LoggingHandler(SocketServer.StreamRequestHandler):
         if self.node_log_file:
             try:
                 self.node_log_file.close()
-                self.node_log_file = False 
+                self.node_log_file = False
             except:
                 pass
         LoggingServer.handlers.remove(self)

@@ -679,10 +679,13 @@ PROCESS_THREAD(controlProcess, ev, data)
     NETSTACK_RADIO.on();
 #endif
 
+/*
 #ifdef CONTIKI_TARGET_INGA
     node_id_restore();
+    printf("INGA: Restored node_id: %d\n", node_id);
 #endif
-    
+*/
+
     platform_id = PLATFORM_ID;
     channel = DEFAULT_CHANNEL;
     radio_set_channel(channel);

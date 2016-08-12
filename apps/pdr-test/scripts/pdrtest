@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+# Startup script for the pdr-test
+# Copyright (C) 2016 Robert Hartung <hartung@ibr.cs.tu-bs.de>
+
+EXTRA_COMMANDS="status"
+EXTRA_HELP="        status  Returns the PID of the process (if running)"
+
+cd /root/pdr-test/
+
+START=99
+STOP=15
+
+start() {
+  pid=`pgrep -f 'python2.7 /root/pdr-test/logging_client.py'`
+  if [ -z "$pid" ]
+    then
+    echo "starting pdrtest"
+    screen -dmSL pdrtest python2.7 /root/pdr-test/logging_client.py
+  fi
+}
+
+stop() {
+  pid=`pgrep -f 'python2.7 /root/pdr-test/logging_client.py'`
+  if [ -n "$pid" ]
+    then
+    echo "stopping pdrtest"
+    kill -9 $pid
+  fi
+}
+
+status() {
+  pgrep -f 'python2.7 /root/pdr-test/logging_client.py'
+}

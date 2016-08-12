@@ -1,0 +1,18 @@
+---
+- hosts: nodes
+  remote_user: root
+  tasks:
+    - name: create pdr-test directory
+      file: path=~/pdr-test/ state=directory mode=0755
+    - name: copy hex file
+      copy: src=./pdr.inga.hex dest=~/pdr-test/pdr.inga.hex owner=root group=root mode=0644
+    - name: copy scripts
+      copy: src=./scripts/eval_logging/ dest=~/pdr-test/
+    - name: copy init script
+      copy: src=./scripts/pdrtest dest=/etc/init.d/pdrtest mode="0744"
+    - name: create symlink to ttyUSB0
+      file:
+        src: /dev/ttyUSB0
+        dest: /dev/tty_INGA
+        state: link
+      ignore_errors: yes
