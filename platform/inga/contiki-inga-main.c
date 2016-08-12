@@ -371,6 +371,8 @@ load_config(void)
   /* If we do not have a pan address, we generate one */
   if(inga_cfg.pan_addr == 0x0000) {
     inga_cfg.pan_addr = pan_addr_from_eui64(inga_cfg.eui64_addr);
+    /* Make sure to also set the node id in this case! */
+    node_id = inga_cfg.pan_addr;
   }
 
 }
