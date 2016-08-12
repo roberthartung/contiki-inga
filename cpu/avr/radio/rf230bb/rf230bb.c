@@ -1402,6 +1402,7 @@ PROCESS_THREAD(rf230_process, ev, data)
     HAL_LEAVE_CRITICAL_REGION();
     PRINTF("rf230_read: %u bytes lqi %u\n",len,rf230_last_correlation);
 
+#if RF230_CONF_AUTOACK
     if(is_promiscuous) {
       uint8_t i;
       unsigned const char * rxdata = packetbuf_dataptr();
@@ -1419,7 +1420,7 @@ PROCESS_THREAD(rf230_process, ev, data)
       for (i=0;i<len;i++)  putchar(rxdata[i]);
       printf("\n");
     }
-
+#endif
 #if DEBUG>1
      {
         uint8_t i;
