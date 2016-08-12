@@ -49,7 +49,7 @@
 #define UDP_PORT 1234
 #define SERVICE_ID 190
 
-#define SEND_INTERVAL		(60 * CLOCK_SECOND)
+#define SEND_INTERVAL		(2 * CLOCK_SECOND)
 #define SEND_TIME		(random_rand() % (SEND_INTERVAL))
 
 static struct simple_udp_connection unicast_connection;
@@ -126,7 +126,11 @@ PROCESS_THREAD(unicast_sender_process, ev, data)
       printf("\n");
       sprintf(buf, "Message %d", message_number);
       message_number++;
+      /*Marker 0: ON()*/
+      printf("Marker0_ON\n");
       simple_udp_sendto(&unicast_connection, buf, strlen(buf) + 1, addr);
+      printf("Marker0_OFF\n");
+      /*Marker 0: OFF()*/
     } else {
       printf("Service %d not found\n", SERVICE_ID);
     }
