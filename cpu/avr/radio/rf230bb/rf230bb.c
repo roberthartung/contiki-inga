@@ -66,6 +66,7 @@
 #include "net/packetbuf.h"
 #include "net/rime/rimestats.h"
 #include "net/netstack.h"
+#include "marker.h"
 
 #define WITH_SEND_CCA 0
 
@@ -972,7 +973,8 @@ rf230_transmit(unsigned short payload_len)
     ENERGEST_OFF(ENERGEST_TYPE_LISTEN);
   }
 
-printf("Marker1_ON\n");
+  // printf("Marker1_ON\n");
+  marker_high(MARKER_2);
   /* Prepare to transmit */
 #if RF230_CONF_FRAME_RETRIES
   radio_set_trx_state(TX_ARET_ON);
@@ -1010,7 +1012,8 @@ printf("Marker1_ON\n");
   hal_frame_write(buffer, total_len);
 
   HAL_LEAVE_CRITICAL_REGION();
-  printf("Marker1_OFF\n");
+  //printf("Marker1_OFF\n");
+  marker_low(MARKER_2);
   PRINTF("rf230_transmit: %d\n", (int)total_len);
 
 #if DEBUG>1

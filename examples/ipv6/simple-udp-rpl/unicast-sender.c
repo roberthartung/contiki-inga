@@ -46,6 +46,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "marker.h"
+
 #define UDP_PORT 1234
 #define SERVICE_ID 190
 
@@ -101,6 +103,8 @@ PROCESS_THREAD(unicast_sender_process, ev, data)
 
   PROCESS_BEGIN();
 
+  marker_init();
+
   servreg_hack_init();
 
   set_global_address();
@@ -127,10 +131,12 @@ PROCESS_THREAD(unicast_sender_process, ev, data)
       sprintf(buf, "Message %d", message_number);
       message_number++;
       /*Marker 0: ON()*/
-      printf("Marker0_ON\n");
+      //printf("Marker0_ON\n");
+      marker_high(MARKER_1);
       simple_udp_sendto(&unicast_connection, buf, strlen(buf) + 1, addr);
-      printf("Marker0_OFF\n");
       /*Marker 0: OFF()*/
+      //printf("Marker0_OFF\n");
+      marker_low(MARKER_1);
     } else {
       printf("Service %d not found\n", SERVICE_ID);
     }
