@@ -1060,7 +1060,7 @@ printf("Marker1_ON\n");
 #endif /* RF230_CONF_TIMESTAMPS */
 
 /*TESTING: UK*/
-radio_off();
+//radio_off();
 
 
   ENERGEST_OFF(ENERGEST_TYPE_TRANSMIT);

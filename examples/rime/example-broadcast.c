@@ -76,8 +76,11 @@ PROCESS_THREAD(example_broadcast_process, ev, data)
 
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 
+    printf("Marker0_ON\n");
     packetbuf_copyfrom("Hello", 6);
+
     broadcast_send(&broadcast);
+    printf("Marker0_OFF\n");
     printf("broadcast message sent\n");
   }
 
