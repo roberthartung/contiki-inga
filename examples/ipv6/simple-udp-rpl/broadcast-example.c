@@ -39,13 +39,14 @@
 
 #include "simple-udp.h"
 
-
+#include "marker.h"
+#include "rf230bb.h"
 #include <stdio.h>
 #include <string.h>
 
 #define UDP_PORT 1234
 
-#define SEND_INTERVAL		(20 * CLOCK_SECOND)
+#define SEND_INTERVAL		(2 * CLOCK_SECOND)
 #define SEND_TIME		(random_rand() % (SEND_INTERVAL))
 
 static struct simple_udp_connection broadcast_connection;
@@ -86,9 +87,15 @@ PROCESS_THREAD(broadcast_example_process, ev, data)
     etimer_set(&send_timer, SEND_TIME);
 
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&send_timer));
+    /*Test UK*/
+    rf230_driver.off();
     printf("Sending broadcast\n");
+    marker_high(MARKER_1);
     uip_create_linklocal_allnodes_mcast(&addr);
+    /*Payload noch variieren*/
     simple_udp_sendto(&broadcast_connection, "Test", 4, &addr);
+    marker_low(MARKER_1);
+    rf230_driver.on();
   }
 
   PROCESS_END();

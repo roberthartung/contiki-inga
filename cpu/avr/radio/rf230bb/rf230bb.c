@@ -619,7 +619,6 @@ static void
 radio_off(void)
 {
 
-
   RF230_receive_on = 0;
   if (hal_get_slptr()) {
     DEBUGFLOW('F');
@@ -1015,7 +1014,7 @@ rf230_transmit(unsigned short payload_len)
   //printf("Marker1_OFF\n");
   marker_low(MARKER_2);
   PRINTF("rf230_transmit: %d\n", (int)total_len);
-
+  marker_high(MARKER_3);
 #if DEBUG>1
 /* Note the dumped packet will have a zero checksum unless compiled with RF230_CONF_CHECKSUM
  * since we don't know what it will be if calculated by the hardware.
@@ -1116,7 +1115,7 @@ rf230_transmit(unsigned short payload_len)
     DEBUGFLOW('o');
     tx_result = RADIO_TX_ERR;
   }
-
+  marker_low(MARKER_3);
   return tx_result;
 }
 /*---------------------------------------------------------------------------*/
