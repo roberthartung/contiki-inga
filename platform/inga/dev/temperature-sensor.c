@@ -36,7 +36,11 @@
 
 #include "contiki.h"
 #include "dev/temperature-sensor.h"
+#if INGA_CONF_REVISION == INGA_V161
 #include "dev/tmp102.h"
+#else
+#include "bmp085.h"
+#endif
 
 const struct sensors_sensor temperature_sensor;
 
@@ -46,10 +50,18 @@ value(int type)
 {
   switch (type) {
     case TEMP:
+#if INGA_CONF_REVISION == INGA_V161
       return tmp102_read_temp_byte();
+#else
+      return bmp085_read_temperature();
+#endif
       break;
     case TEMP_H:
+#if INGA_CONF_REVISION == INGA_V161
       return tmp102_read_temp_word();
+#else
+      return bmp085_read_temperature();
+#endif
       break;
   }
 }
@@ -57,7 +69,11 @@ value(int type)
 static int
 configure(int type, int c)
 {
+#if INGA_CONF_REVISION == INGA_V161
   return tmp102_init(); //TODO return =1 (OK) =0 (Failure)
+#else
+  return bmp085_init();
+#endif
 }
 /*---------------------------------------------------------------------------*/
 static int

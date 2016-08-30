@@ -531,7 +531,7 @@ static int set_txpower(uint8_t p)
         radio_set_txpower(RADIO_POWER_MIN);
     }
     else {
-        printf("Invalid power\n");;
+        printf("Invalid power\n");
         return 0;
     }
     return txpower;
@@ -680,9 +680,9 @@ PROCESS_THREAD(controlProcess, ev, data)
 #endif
 
 #ifdef CONTIKI_TARGET_INGA
-    node_id_restore();
+  node_id_restore();
 #endif
-    
+
     platform_id = PLATFORM_ID;
     channel = DEFAULT_CHANNEL;
     radio_set_channel(channel);

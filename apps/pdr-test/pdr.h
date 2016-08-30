@@ -288,9 +288,9 @@ extern bool cc2420_without_send_cca;
 #ifdef CONTIKI_TARGET_INGA
 #define PLATFORM_ID  9
 #endif
-#define PLATFORM_ID_MAX 9
+#define PLATFORM_ID_MAX 10
 
-char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u108", "ti-sensortag", "inga"};
+char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u108", "u108dev", "ti-sensortag", "inga"};
 
 /* For TX between platforms */
 
@@ -302,7 +302,6 @@ char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u
 
 #define COMMAND_TX_FINISHED   "send done"
 #define COMMAND_STAT_FINISHED   "end of statistics"
-
 
 #include "pattern.h"
 
