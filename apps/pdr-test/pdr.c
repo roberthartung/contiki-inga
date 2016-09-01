@@ -342,7 +342,7 @@ static void inputPacket(void)
 
     s = &stats[currentStatsIdx];
 
-    /* sender and channel is  "key" */
+    /* sender and channel is "key" */
     if ((crc8(h, sizeof(*h)) == 0) && (h->sender != s->node_id || h->channel != s->channel || h->txpower != s->txpower)) {
         findIdx = -1;
         lastIdx = -1;
@@ -350,6 +350,7 @@ static void inputPacket(void)
             if (h->sender == stats[i].node_id && h->channel == stats[i].channel && h->txpower == s->txpower) {
                 findIdx = i;
             }
+
             if (stats[i].node_id != 0) {
                 lastIdx = i;
             }
@@ -357,6 +358,9 @@ static void inputPacket(void)
 
         if (lastIdx == STAT_SIZE - 1) {
             // stats memory full
+#if DEBUG
+            printf("E:FULL2\n");
+#endif
             currentStatsIdx = -1;
             return;
         }
@@ -476,7 +480,6 @@ static void inputPacket(void)
     // putchar(to_hex(h->packetNumber & 0xf));
     // putchar('\n');
 
-
     /* correct data */
 
     s->fine++;
@@ -485,7 +488,6 @@ static void inputPacket(void)
     s->lqiSumDiff += 255 - packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);   // sum up difference to 255 (save memory)
     if (rssi > s->rssiMax) s->rssiMax = rssi;
     if (rssi == 0 || rssi < s->rssiMin) s->rssiMin = rssi;
-
 
 #if DEBUG || 1
     packetsReceived[h->packetNumber - 1] = 1;
