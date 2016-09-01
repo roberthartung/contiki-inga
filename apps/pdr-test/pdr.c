@@ -347,7 +347,7 @@ static void inputPacket(void)
         findIdx = -1;
         lastIdx = -1;
         for (i=0; i<STAT_SIZE; i++) {
-            if (h->sender == stats[i].node_id && h->channel == stats[i].channel && h->txpower == s->txpower) {
+            if (h->sender == stats[i].node_id && h->channel == stats[i].channel && h->txpower == stats[i].txpower) {
                 findIdx = i;
             }
 
