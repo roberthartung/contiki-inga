@@ -205,7 +205,7 @@ void printStats(struct stats_info *s)
     int16_t rssi;
     uint8_t lqi;
 
-    if (s->node_id == 0) return;
+    if (s->channel == 0) return;
 
     if (s->fine == 0) {
         rssi = 0;
