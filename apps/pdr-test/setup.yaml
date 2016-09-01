@@ -3,9 +3,10 @@
   tasks:
     - name: create pdr-test directory
       file: path=~/pdr-test/ansible.hosts state=directory mode=0755
+      ignore_errors: yes
     - name: copy hosts
       copy: src=./ansible.hosts dest=~/pdr-test/ansible.hosts owner=potato group=potato mode=0644
     - name: copy hex file
-      copy: src=./pdr.inga.hex dest=~/pdr-test/pdr.inga.hex owner=potato group=potato mode=0644
-    - name: synchronize scripts
-      synchronize: src=./scripts/ dest=~/pdr-test/scripts/
+      copy: src=./pdr.hex dest=~/pdr-test/pdr.hex owner=potato group=potato mode=0644
+#    - name: synchronize scripts
+#      synchronize: src=./scripts/ dest=~/pdr-test/scripts/
