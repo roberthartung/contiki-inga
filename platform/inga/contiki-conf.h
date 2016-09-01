@@ -192,9 +192,9 @@
  * Set this smaller than the expected minimum rssi to avoid packet collisions */
 /* The Jackdaw menu 'm' command is helpful for determining the smallest ever received rssi */
 #define RF230_CONF_CCA_THRES      -85
-/* Default is one RAM buffer for received packets. 
+/* Default is one RAM buffer for received packets.
  * More than one may benefit multiple TCP connections or ports */
-#define RF230_CONF_RX_BUFFERS     3
+#define RF230_CONF_RX_BUFFERS     1 //// NOTE(rh): WAS 3
 
 /* -- UIP settings */
 #define UIP_CONF_UDP_CHECKSUMS    1
@@ -205,9 +205,9 @@
 /* Use this to prevent 6LowPAN fragmentation (whether or not fragmentation is enabled) */
 //#define UIP_CONF_TCP_MSS      48
 
-/* 6LoWPAN does not do well with concurrent TCP streams, 
+/* 6LoWPAN does not do well with concurrent TCP streams,
  * as new browser GETs collide with packets coming
- * from previous GETs, causing decreased throughput, retransmissions, and timeouts. 
+ * from previous GETs, causing decreased throughput, retransmissions, and timeouts.
  * Increase to study this. */
 #define UIP_CONF_MAX_CONNECTIONS  1
 
@@ -239,18 +239,18 @@
 /* ************************************************************************** */
 #if UIP_CONF_IPV6_RPL
 
-/* Define MAX_*X_POWER to reduce tx power and ignore weak rx packets 
+/* Define MAX_*X_POWER to reduce tx power and ignore weak rx packets
  * for testing a miniature multihop network.
  * Leave undefined for full power and sensitivity.
  * tx=0 (3dbm, default) to 15 (-17.2dbm)
- * RF230_CONF_AUTOACK sets the extended mode using the energy-detect register 
+ * RF230_CONF_AUTOACK sets the extended mode using the energy-detect register
  * with rx=0 (-91dBm) to 84 (-7dBm)
  * else the rssi register is used having range 0 (91dBm) to 28 (-10dBm)
- * For simplicity RF230_MIN_RX_POWER is based on the energy-detect value 
+ * For simplicity RF230_MIN_RX_POWER is based on the energy-detect value
  * and divided by 3 when autoack is not set.
- * On the RF230 a reduced rx power threshold will not prevent autoack 
+ * On the RF230 a reduced rx power threshold will not prevent autoack
  * if enabled and requested.
- * These numbers applied to both Raven and Jackdaw give a maximum 
+ * These numbers applied to both Raven and Jackdaw give a maximum
  * communication distance of about 15 cm
  * and a 10 meter range to a full-sensitivity RF230 sniffer.
 #define RF230_MAX_TX_POWER 15
@@ -283,7 +283,7 @@
 
 #ifndef CC_CONF_INLINE
 #define CC_CONF_INLINE inline
-#endif 
+#endif
 
 /* Include the project config.
  * PROJECT_CONF_H might be defined in the project Makefile */
