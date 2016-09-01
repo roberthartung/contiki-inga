@@ -271,7 +271,7 @@ void rtimerCallback(struct rtimer *t, void *ptr)
     static uint8_t sendBuffer[TEST_PACKET_SIZE] __attribute__((aligned (2))) =  { 0, 0, 0, 10 };
     struct packetHeader *h = (struct packetHeader *) sendBuffer;
 
-    rtimer_clock_t next = RTIMER_TIME(t);
+    rtimer_clock_t next = 0;
 
     switch (currentState) {
         case STATE_RX:
@@ -303,10 +303,12 @@ void rtimerCallback(struct rtimer *t, void *ptr)
                     set_txpower(get_txpower()-1);
                     sendPacketNumber = 0;
                     currentState = STATE_TX;
+                    next = RTIMER_NOW(); // RTIMER_TIME(t);
                     next += 64*PACKET_SEND_INTERVAL;
                 }
             }
             else {
+                next = RTIMER_NOW(); // RTIMER_TIME(t);
                 next += PACKET_SEND_INTERVAL;
             }
             break;
