@@ -47,6 +47,9 @@
 #endif
 
 #if CONTIKI_TARGET_Z1 || CONTIKI_TARGET_SKY
+/**********************************/
+/*************** SKY **************/
+/**********************************/
 // Zolertia Z1 or Sky
 
 #define PLATFORM_RADIO_HEADER "cc2420.h"
@@ -98,6 +101,10 @@ char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN"}; /* dBm */ //FIME
 
 #elif CONTIKI_TARGET_AVR_RSS2
 
+/**********************************/
+/************ AVR-RSS2 ************/
+/**********************************/
+
 // To compile:
 // make  TARGET=avr-RSS2
 
@@ -148,6 +155,9 @@ char *tx_power_list[] = { "3", "0", "-7", "-17", "-17"}; /* dBm */
 #define RADIO_POWER_MINUS15_DB 0x0
 
 #elif CONTIKI_TARGET_SENSORTAG
+/**********************************/
+/************ SENSORTAG ***********/
+/**********************************/
 // make  TARGET=uunode BOARD=cc26xx
 // make  TARGET=srf06-cc26xx BOARD=sensortag/cc2650
 
@@ -173,9 +183,10 @@ uint8_t get_channel() {
 #define PLATFORM_TEMP_SENSOR_HEADER "tmp-007-sensor.h"
 #define temp_sensor       tmp_007_sensor
 
-
 #elif CONTIKI_TARGET_INGA
-
+/**********************************/
+/************** INGA **************/
+/**********************************/
 #define PLATFORM_RADIO_HEADER "radio/rf230bb/rf230bb.h"
 
 #define radio_set_txpower rf230_set_txpower
