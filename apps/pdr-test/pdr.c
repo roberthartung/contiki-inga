@@ -332,13 +332,37 @@ static void inputPacket(void)
     uint8_t rssi;
     uint8_t i;
 
-    if (currentStatsIdx < 0 || currentStatsIdx >= STAT_SIZE) return;
+    /// printf("packet: %u\n", /*h->txpower,*/ h->packetNumber/*, packetbuf_hdrptr(), packetbuf_dataptr()*/);
+
+    if (currentStatsIdx < 0 || currentStatsIdx >= STAT_SIZE) {
+#if DEBUG
+      printf("E:FULL\n");
+#endif
+      return;
+    }
     // TODO: better handling when stats memory full.
     // at the moment: ignoring new packets.
 
     /* sanity check */
-    if (h->channel != channel) return;
-    if (h->platform_id == 0 || h->platform_id > PLATFORM_ID_MAX) return;
+    if (h->channel != channel) {
+#if DEBUG
+      printf("E:CHAN\n");
+#endif
+      return;
+    }
+    if (h->platform_id == 0 || h->platform_id > PLATFORM_ID_MAX) {
+#if DEBUG
+      printf("E:PLAT\n");
+#endif
+      return;
+    }
+
+    if (h->sender == node_id) {
+#if DEBUG
+      printf("I:self\n");
+#endif
+      return;
+    }
 
     s = &stats[currentStatsIdx];
 
