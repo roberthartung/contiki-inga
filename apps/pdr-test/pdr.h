@@ -195,18 +195,17 @@ uint8_t get_channel() {
 #define radio_get_channel rf230_get_channel
 #define radio_get_rssi    rf230_rssi
 
-// see ATmega128RFA1 datasheet page 109
-#define RADIO_POWER_MAX        0   	// 3dbm
-#define RADIO_POWER_MIN        15  	// -17.2dbm
-#define RADIO_POWER_ZERO_DB    6   	// actually 0.5 dBm
-#define RADIO_POWER_MINUS7_DB  12  	// actually -6.5 dBm
-#define RADIO_POWER_MINUS15_DB TX_PWR_17_2DBM  // actually -17.5 dBm
+/// Taken from http://www.atmel.com/images/Atmel-8351-MCU_Wireless-AT86RF233_Datasheet.pdf
+#define RADIO_POWER_MAX        0x0   	          //   4dbm
+#define RADIO_POWER_MIN        TX_PWR_17_2DBM  	// -17dbm
+#define RADIO_POWER_ZERO_DB    0x7              //   0dbm
+#define RADIO_POWER_MINUS7_DB  0xD              // actually -8
+#define RADIO_POWER_MINUS15_DB 0xE              // actually -12 dBm
 
-char *tx_power_list[] = { "3", "0", "-7", "-17", "-17"}; /* dBm */
+char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN"}; /* dBm */
 
 #define PLATFORM_TEMP_SENSOR_HEADER "dev/temperature-sensor.h"
 #define temp_sensor temperature_sensor
-
 #else
 #error No support for your platform!
 #endif // CONTIKI_TARGET_xx
