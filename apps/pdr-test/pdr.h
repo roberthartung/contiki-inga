@@ -21,7 +21,7 @@
 // test ID (useful e.g. in case of multiple motes having simultaneous tests)
 #define TEST_ID 0x1
 
-#define STAT_SIZE                   40
+#define STAT_SIZE                   50
 #define TEST_PACKET_SIZE            (6 + 6 * 10)
 #define PACKETS_IN_TEST             100u
 
@@ -76,6 +76,9 @@ char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN"}; /* dBm */ //FIME
 #endif
 
 #elif CONTIKI_TARGET_U108 || CONTIKI_TARGET_U108DEV
+/**********************************/
+/*************** U108 *************/
+/**********************************/
 // U108
 // make OPENOCD_CFG=interface/neodb.cfg OPENOCD="sudo openocd" send.upload TARGET=u108dev
 
@@ -298,11 +301,15 @@ extern bool cc2420_without_send_cca;
 #define PLATFORM_ID  8
 #endif
 #ifdef CONTIKI_TARGET_INGA
-#define PLATFORM_ID  9
+  #if INGA_CONF_REVISION == INGA_V161
+    #define PLATFORM_ID  9
+  #else
+    #define PLATFORM_ID  10
+  #endif
 #endif
 #define PLATFORM_ID_MAX 10
 
-char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u108", "u108dev", "ti-sensortag", "inga"};
+char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u108", "u108dev", "ti-sensortag", "inga-1.6.1", "inga-1.4"};
 
 /* For TX between platforms */
 
@@ -312,7 +319,7 @@ char *platform_list[] = { "none", "native", "cooja", "avr-rss2", "z1", "sky", "u
 #define TX_POWER_MINUS15_DB 3
 #define TX_POWER_MIN        4
 
-#define COMMAND_TX_FINISHED   "send done"
+#define COMMAND_TX_FINISHED     "send done"
 #define COMMAND_STAT_FINISHED   "end of statistics"
 
 #include "pattern.h"
