@@ -96,6 +96,7 @@ uint8_t channel;
 uint8_t platform_id;
 int16_t txtemp;
 
+uint16_t lastPacketNumber = 0xffff;
 
 struct rtimer rt;
 static struct etimer periodic;
@@ -331,6 +332,11 @@ static void inputPacket(void)
     int8_t lastIdx;
     uint8_t rssi;
     uint8_t i;
+
+    if(h->packetNumber == lastPacketNumber) {
+      printf("E:PNR\n");
+    }
+    lastPacketNumber = h->packetNumber;
 
     /// printf("packet: %u\n", /*h->txpower,*/ h->packetNumber/*, packetbuf_hdrptr(), packetbuf_dataptr()*/);
 
