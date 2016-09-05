@@ -38,7 +38,7 @@
 // Approximation for RSS2
 #define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/128)
 #elif CONTIKI_TARGET_INGA
-#define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/128)
+#define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/64)
 #else
 // good for Z1 and sky
 #define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/200)
@@ -61,11 +61,21 @@
 #define radio_get_channel cc2420_get_channel
 #define radio_get_rssi    cc2420_rssi
 
-#define RADIO_POWER_MAX        31
-#define RADIO_POWER_MIN        0
-#define RADIO_POWER_ZERO_DB    31
-#define RADIO_POWER_MINUS7_DB  15
-#define RADIO_POWER_MINUS15_DB 7
+// dbm values taken from cc2420.c, output_config output_power
+// Datasheet from http://www.ti.com/lit/ds/symlink/cc2420.pdf
+// {  0, 31 }, /* 0xff *
+// { -1, 27 }, /* 0xfb */
+// { -3, 23 }, /* 0xf7 */
+// { -5, 19 }, /* 0xf3 */
+// { -7, 15 }, /* 0xef */
+// {-10, 11 }, /* 0xeb */
+// {-15,  7 }, /* 0xe7 */
+// {-25,  3 }, /* 0xe3 */
+#define RADIO_POWER_MAX        31     //   0dbm
+#define RADIO_POWER_MIN        3      // -25dbm
+#define RADIO_POWER_ZERO_DB    31     //   0dbm
+#define RADIO_POWER_MINUS7_DB  15     //  -7dbm
+#define RADIO_POWER_MINUS15_DB 7      // -15dbm
 
 char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN"}; /* dBm */ //FIME
 
@@ -128,13 +138,13 @@ char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN"}; /* dBm */ //FIME
 #define radio_get_rssi    rf230_rssi
 
 // see ATmega128RFA1 datasheet page 109
-#define RADIO_POWER_MAX        TX_PWR_3DBM
-#define RADIO_POWER_MIN        TX_PWR_17_2DBM
-#define RADIO_POWER_ZERO_DB    6   // actually 0.5 dBm
-#define RADIO_POWER_MINUS7_DB  12  // actually -6.5 dBm
-#define RADIO_POWER_MINUS15_DB TX_PWR_17_2DBM  // actually -17.5 dBm
+#define RADIO_POWER_MAX        TX_PWR_3DBM      // 3.5dm
+#define RADIO_POWER_MIN        TX_PWR_17_2DBM   // -16.5dbm
+#define RADIO_POWER_ZERO_DB    6                // actually 0.5 dBm
+#define RADIO_POWER_MINUS7_DB  12               // actually -6.5 dBm
+#define RADIO_POWER_MINUS15_DB 14               // actually -11.5 dBm
 
-char *tx_power_list[] = { "3", "0", "-7", "-17", "-17"}; /* dBm */
+char *tx_power_list[] = { "MAX", "0", "-7", "-15", "MIN" }; /* dBm */
 
 /*
  Convert From RSSI to dBm.  See page 70:
