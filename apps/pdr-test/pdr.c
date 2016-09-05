@@ -338,6 +338,9 @@ static void inputPacket(void)
     }
     lastPacketNumber = h->packetNumber;
 
+    if(h->sender < 1 || h->sender > 14) {
+      printf("E:sender\n");
+    }
     /// printf("packet: %u\n", /*h->txpower,*/ h->packetNumber/*, packetbuf_hdrptr(), packetbuf_dataptr()*/);
 
     if (currentStatsIdx < 0 || currentStatsIdx >= STAT_SIZE) {
