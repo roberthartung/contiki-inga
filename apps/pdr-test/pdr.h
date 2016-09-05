@@ -41,7 +41,7 @@
 #define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/64)
 #else
 // good for Z1 and sky
-#define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/200)
+#define PACKET_SEND_INTERVAL        (RTIMER_ARCH_SECOND/64)
 #endif
 
 #ifdef CONTIKI_TARGET_UUNODE
