@@ -97,6 +97,8 @@ uint8_t platform_id;
 int16_t txtemp;
 
 uint16_t lastPacketNumber = 0xffff;
+uint16_t senderOutOfRangeCount = 0;
+uint16_t duplicatePacketNumberCount = 0;
 
 struct rtimer rt;
 static struct etimer periodic;
@@ -183,6 +185,8 @@ void clearStats(void)
 {
     memset(&stats, 0, sizeof(stats));
     currentStatsIdx = 0;
+    senderOutOfRangeCount = 0;
+    duplicatePacketNumberCount = 0;
 }
 
 uint8_t txpower;
@@ -334,12 +338,14 @@ static void inputPacket(void)
     uint8_t i;
 
     if(h->packetNumber == lastPacketNumber) {
-      printf("E:PNR\n");
+      duplicatePacketNumberCount++;
+      // printf("E:PNR\n");
     }
     lastPacketNumber = h->packetNumber;
 
     if(h->sender < 1 || h->sender > 14) {
-      printf("E:sender\n");
+      senderOutOfRangeCount++;
+      // printf("E:sender\n");
     }
     /// printf("packet: %u\n", /*h->txpower,*/ h->packetNumber/*, packetbuf_hdrptr(), packetbuf_dataptr()*/);
 
@@ -678,6 +684,7 @@ static void handle_serial_input(const char *line)
         for(i=0; i < STAT_SIZE; i++) {
             printStats(&stats[i]);
         }
+        printf("ERRORS;%d;%d;\n", duplicatePacketNumberCount, senderOutOfRangeCount);
         clearStats();
         printf("%s\n", COMMAND_STAT_FINISHED);
     }
