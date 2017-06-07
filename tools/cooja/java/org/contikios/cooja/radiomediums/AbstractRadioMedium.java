@@ -67,7 +67,7 @@ import org.jdom.Element;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractRadioMedium extends RadioMedium {
-  private final static boolean DEBUG = false;
+  private final static boolean DEBUG = true;
 	private static Logger logger = Logger.getLogger(AbstractRadioMedium.class);
 	
 	/* Signal strengths in dBm.
@@ -235,6 +235,8 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 			Radio radio = (Radio) obs;
 			
 			final Radio.RadioEvent event = radio.getLastEvent();
+			
+			logger.debug("radioEventsObserver.update " + event + " " + radio.getMote().getID());
 			
 			switch (event) {
 				case RECEPTION_STARTED:

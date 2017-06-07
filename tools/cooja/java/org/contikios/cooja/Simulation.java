@@ -35,6 +35,11 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.swing.JOptionPane;
 
@@ -131,6 +136,7 @@ public class Simulation extends Observable implements Runnable {
     Runnable r;
     synchronized (pollRequests) {
       r = pollRequests.pop();
+      //logger.info("SimulationInvoke " + r);
       hasPollRequests = !pollRequests.isEmpty();
     }
     return r;
@@ -187,11 +193,12 @@ public class Simulation extends Observable implements Runnable {
    * @param e Event
    * @param time Execution time
    */
-  public void scheduleEvent(final TimeEvent e, final long time) {
+  public synchronized void scheduleEvent(final TimeEvent e, final long time) {
     if (isRunning) {
       /* TODO Strict scheduling from simulation thread */
       assert isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
     }
+    //logger.debug("scheduleEvent @ "+ time +" " + e);
     eventQueue.addEvent(e, time);
   }
 
@@ -247,6 +254,17 @@ public class Simulation extends Observable implements Runnable {
     eventQueue.removeAll();
     pollRequests.clear();
   }
+  
+  private class EventRunner implements Runnable {
+		public TimeEvent nextEvent;
+	  
+		@Override
+		public void run() {
+			nextEvent.execute(nextEvent.time);
+		}
+	}
+  
+  private static final boolean PARALLIZED = true;
 
   public void run() {
     long lastStartTime = System.currentTimeMillis();
@@ -258,28 +276,82 @@ public class Simulation extends Observable implements Runnable {
     /* Simulation starting */
     this.setChanged();
     this.notifyObservers(this);
+    
+    //ExecutorService es = Executors.newCachedThreadPool();
+    ExecutorService es = Executors.newFixedThreadPool(7);
+    //ExecutorService es = Executors.newFixedThreadPool(getMotesCount()+1);
+    int max_runners = getMotesCount()*2;
+    EventRunner[] runners = new EventRunner[max_runners];
+    Future<?>[] futures = new Future<?>[max_runners];
+    for(int r=0;r < runners.length; r++) {
+    	runners[r] = new EventRunner();
+    }
 
     TimeEvent nextEvent = null;
+    //ArrayList<EventRunner> runners = new ArrayList<>();
+    //ArrayList<Future<?>> futures = new ArrayList<>();
     try {
+    	int runner_count = 0;
       while (isRunning) {
-
         /* Handle all poll requests */
         while (hasPollRequests) {
+          logger.info("SimulationInvoke");
           popSimulationInvokes().run();
         }
-
-        /* Handle one simulation event, and update simulation time */
-        nextEvent = eventQueue.popFirst();
-        if (nextEvent == null) {
-          throw new RuntimeException("No more events");
+        
+        if(PARALLIZED) {
+        	/// Simulate 1ms at a time
+            long time = currentSimulationTime + Simulation.MILLISECOND;  
+            runner_count = 0;
+            while(eventQueue.peekFirst() != null && eventQueue.peekFirst().time <= time && runner_count < max_runners) {
+            	nextEvent = eventQueue.popFirst();
+            	//logger.info("From queue: " + nextEvent);
+            	//currentSimulationTime = nextEvent.time;
+            	//runners.add(new EventRunner(nextEvent));
+            	runners[runner_count++].nextEvent = nextEvent;
+            }
+            /*
+            if(runners.size() != 10) {
+            	logger.debug("Finished one round " + runners.size() + " " + currentSimulationTime + " - " + time);
+            	Thread.sleep(10);
+            }
+            */
+            
+            /// We cannot directly submit runners, as they might be finished before the last is started!
+            for(int r=0;r<runner_count;r++) {
+            //for(EventRunner runner : runners) {
+            	futures[r] = es.submit(runners[r]);
+            }
+            
+            for(int f=0;f<runner_count;f++) {
+            	futures[f].get();
+            }
+            
+            //runners.clear();
+            //logger.info("Handling " + events.size() + " events");
+            /*
+            for(Future<?> f : futures) {
+            	f.get();
+            }
+            */
+            //futures.clear();
+            currentSimulationTime = time;
+        } else {
+        	
+            /// Handle one simulation event, and update simulation time 
+            nextEvent = eventQueue.popFirst();
+            if (nextEvent == null) {
+              throw new RuntimeException("No more events");
+            }
+            if (nextEvent.time < currentSimulationTime) {
+              throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent);
+            }
+            currentSimulationTime = nextEvent.time;
+            //logger.debug("Executing event @ " + currentSimulationTime + ": " + nextEvent);
+            
+            nextEvent.execute(currentSimulationTime);
         }
-        if (nextEvent.time < currentSimulationTime) {
-          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent);
-        }
-        currentSimulationTime = nextEvent.time;
-        /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
-        nextEvent.execute(currentSimulationTime);
-
+        
         if (stopSimulation) {
           isRunning = false;
         }
@@ -288,7 +360,6 @@ public class Simulation extends Observable implements Runnable {
     	if (e instanceof BreakpointTriggered) {
     		logger.info("Simulation stopped due to breakpoint: " + e.getMessage());
     	} else {
-
     		logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
     		if (!Cooja.isVisualized()) {
     			/* Quit simulator if in test mode */
@@ -301,7 +372,11 @@ public class Simulation extends Observable implements Runnable {
     		  Cooja.showErrorDialog(Cooja.getTopParentContainer(), title, e, false);
     		}
     	}
-    }
+    } catch (InterruptedException e) {
+		e.printStackTrace();
+	} catch (ExecutionException e) {
+		e.printStackTrace();
+	}
     isRunning = false;
     simulationThread = null;
     stopSimulation = false;

@@ -119,7 +119,7 @@ public abstract class AvroraMote extends AbstractEmulatedMote implements Watchpo
       for (String name : getPlatform().getDeviceNames()) {
         Object obj = getPlatform().getDevice(name);
         if (avrora.sim.platform.sensors.Sensor.class.isAssignableFrom(obj.getClass())) {
-          System.out.println("Found sensor: " + obj.getClass().getSimpleName());
+          logger.info("Found sensor: " + obj.getClass().getSimpleName());
           sensorMap.put(obj.getClass().getSimpleName(), new Sensor(this, new SensorWrapper((avrora.sim.platform.sensors.Sensor) obj)));
         }
       }
@@ -206,10 +206,12 @@ public abstract class AvroraMote extends AbstractEmulatedMote implements Watchpo
         cyclesExecuted += nsteps;
       } else {
         /* We end up here when watchpoints (probes) are executed */
-        /*logger.warn("Avrora did not execute any instruction, aborting executing temporarily");*/
+        logger.warn("Avrora did not execute any instruction, aborting executing temporarily");
         break;
       }
     }
+    
+    //logger.info("execute " + getID());
 
     /* Schedule wakeup every millisecond */
     /* TODO Optimize next wakeup time */

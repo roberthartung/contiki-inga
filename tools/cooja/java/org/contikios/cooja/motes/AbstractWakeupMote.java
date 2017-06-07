@@ -47,10 +47,12 @@ public abstract class AbstractWakeupMote implements Mote {
       AbstractWakeupMote.this.execute(t);
     }
     public String toString() {
-      return "EXECUTE " + this.getClass().getName();
+      return AbstractWakeupMote.this.getClass().getName() + " #" + AbstractWakeupMote.this.getID();
+    }
+    public AbstractWakeupMote getMote() {
+    	return AbstractWakeupMote.this;
     }
   };
-
   
   public Simulation getSimulation() {
       return simulation;
@@ -126,6 +128,7 @@ public abstract class AbstractWakeupMote implements Mote {
       
     if (executeMoteEvent.isScheduled() &&
         executeMoteEvent.getTime() <= time) {
+    	logger.error("wakeup event already scheduled");
       /* Already scheduled wakeup event precedes given time - ignore wakeup request */
       return false;
     }
